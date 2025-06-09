@@ -53,6 +53,13 @@ class TimeManagerPopup {
                 el.textContent = txt;
             }
         });
+
+        document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+            const keys = el.getAttribute('data-i18n-placeholder').split('.');
+            let txt = this.translations;
+            keys.forEach(k => { if (txt) txt = txt[k]; });
+            if (txt) el.placeholder = txt;
+        });
     }
 
     setupAutoSave() {
@@ -135,7 +142,8 @@ class TimeManagerPopup {
             if (chrome.runtime.lastError) {
                 console.error(chrome.runtime.lastError);
                 this.populateForm(this.defaultConfig);
-                this.showStatus('❌ Erreur de chargement', 'error');
+                const err = this.translations.loadError || 'Erreur de chargement';
+                this.showStatus(`❌ ${err}`, 'error');
             } else {
                 const cfg = result.timeManagerConfig || this.defaultConfig;
                 this.populateForm(cfg);
@@ -170,7 +178,8 @@ class TimeManagerPopup {
         chrome.storage.sync.set({ timeManagerConfig: config }, () => {
             if (chrome.runtime.lastError) {
                 console.error(chrome.runtime.lastError);
-                this.showStatus('❌ Erreur de sauvegarde', 'error');
+                const err = this.translations.saveError || 'Erreur de sauvegarde';
+                this.showStatus(`❌ ${err}`, 'error');
             } else {
                 this.translations = window.TRANSLATIONS[config.LANGUAGE] || this.translations;
                 this.applyTranslations();
@@ -214,11 +223,13 @@ class TimeManagerPopup {
     }
 
     resetConfiguration() {
-        if (!confirm('Êtes-vous sûr de vouloir réinitialiser la configuration ?')) return;
+        const confirmMsg = this.translations.resetConfirm || 'Êtes-vous sûr de vouloir réinitialiser la configuration ?';
+        if (!confirm(confirmMsg)) return;
         chrome.storage.sync.remove('timeManagerConfig', () => {
             if (chrome.runtime.lastError) {
                 console.error(chrome.runtime.lastError);
-                this.showStatus('❌ Erreur de réinitialisation', 'error');
+                const err = this.translations.resetError || 'Erreur de réinitialisation';
+                this.showStatus(`❌ ${err}`, 'error');
             } else {
                 this.populateForm(this.defaultConfig);
                 this.translations = window.TRANSLATIONS[this.defaultConfig.LANGUAGE] || this.translations;
