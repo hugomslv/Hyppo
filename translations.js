@@ -16,7 +16,26 @@ window.TRANSLATIONS = {
         restartNotice: "Veuillez recharger l'onglet pour appliquer la nouvelle langue",
         configSaved: "Configuration sauvegardée !",
         configLoaded: "Configuration chargée",
-        configReset: "Configuration réinitialisée"
+        configReset: "Configuration réinitialisée",
+        popup: {
+            title: "Time Manager - Configuration",
+            subtitle: "Configuration",
+            description: "Personnalisez les paramètres ci-dessous. Les modifications sont sauvegardées automatiquement. Changez la langue pour traduire l'interface puis redémarrez la page.",
+            workHoursTitle: "⏰ Heures de travail",
+            dailyHoursLabel: "Heures par jour:",
+            workingDaysLabel: "Jours par semaine:",
+            languageTitle: "🌍 Langue",
+            languageLabel: "Langue de l'interface:",
+            pauseTitle: "🍽️ Configuration des pauses",
+            lunchStartLabel: "Début pause déjeuner:",
+            lunchEndLabel: "Fin pause déjeuner:",
+            minPauseLabel: "Pause minimum (minutes):",
+            tableTitle: "📊 Personnalisation du tableau",
+            convertRowsLabel: "Lignes à convertir en jours:",
+            removeRowsLabel: "Lignes à supprimer:",
+            resetButton: "🔄 Réinitialiser",
+            saveButton: "💾 Sauvegarder"
+        }
     },
     en: {
         welcome: "Welcome",
@@ -34,7 +53,26 @@ window.TRANSLATIONS = {
         restartNotice: "Please reload the tab to apply the new language",
         configSaved: "Configuration saved!",
         configLoaded: "Configuration loaded",
-        configReset: "Configuration reset"
+        configReset: "Configuration reset",
+        popup: {
+            title: "Time Manager - Settings",
+            subtitle: "Settings",
+            description: "Customize the settings below. Changes are saved automatically. Change the language to translate the interface then reload the page.",
+            workHoursTitle: "⏰ Work Hours",
+            dailyHoursLabel: "Hours per day:",
+            workingDaysLabel: "Days per week:",
+            languageTitle: "🌍 Language",
+            languageLabel: "Interface language:",
+            pauseTitle: "🍽️ Break settings",
+            lunchStartLabel: "Lunch break start:",
+            lunchEndLabel: "Lunch break end:",
+            minPauseLabel: "Minimum break (minutes):",
+            tableTitle: "📊 Table customization",
+            convertRowsLabel: "Rows to convert to days:",
+            removeRowsLabel: "Rows to remove:",
+            resetButton: "🔄 Reset",
+            saveButton: "💾 Save"
+        }
     },
     de: {
         welcome: "Willkommen",
@@ -52,6 +90,25 @@ window.TRANSLATIONS = {
         restartNotice: "Laden Sie den Tab neu, um die neue Sprache anzuwenden",
         configSaved: "Konfiguration gespeichert!",
         configLoaded: "Konfiguration geladen",
-        configReset: "Konfiguration zurückgesetzt"
+        configReset: "Konfiguration zurückgesetzt",
+        popup: {
+            title: "Time Manager - Einstellungen",
+            subtitle: "Einstellungen",
+            description: "Passen Sie unten die Parameter an. Änderungen werden automatisch gespeichert. Sprache ändern um die Oberfläche zu übersetzen und Seite neu laden.",
+            workHoursTitle: "⏰ Arbeitsstunden",
+            dailyHoursLabel: "Stunden pro Tag:",
+            workingDaysLabel: "Tage pro Woche:",
+            languageTitle: "🌍 Sprache",
+            languageLabel: "Sprache der Oberfläche:",
+            pauseTitle: "🍽️ Pauseneinstellungen",
+            lunchStartLabel: "Beginn Mittagspause:",
+            lunchEndLabel: "Ende Mittagspause:",
+            minPauseLabel: "Minimale Pause (Minuten):",
+            tableTitle: "📊 Tabellenanpassung",
+            convertRowsLabel: "Zeilen zu Tagen konvertieren:",
+            removeRowsLabel: "Zeilen entfernen:",
+            resetButton: "🔄 Zurücksetzen",
+            saveButton: "💾 Speichern"
+        }
     }
 };
