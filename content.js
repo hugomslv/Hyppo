@@ -125,7 +125,7 @@ setTimeout(async () => {
       parseTimeStringToHours(timeString) {
         if (!timeString || timeString === '-') return 0;
         const [hours, minutes] = timeString.split(':').map(Number);
-        return hours + (minutes || 0) / 60;
+        return hours + minutes / 60;
       }
   
       formatHoursToTimeString(hours) {
