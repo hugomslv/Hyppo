@@ -12,7 +12,11 @@ window.TRANSLATIONS = {
         overtimeThisWeek: "Heures supplémentaires cette semaine",
         none: "Aucun",
         yes: "Oui",
-        no: "Non"
+        no: "Non",
+        restartNotice: "Veuillez recharger l'onglet pour appliquer la nouvelle langue",
+        configSaved: "Configuration sauvegardée !",
+        configLoaded: "Configuration chargée",
+        configReset: "Configuration réinitialisée"
     },
     en: {
         welcome: "Welcome",
@@ -26,7 +30,11 @@ window.TRANSLATIONS = {
         overtimeThisWeek: "Overtime This Week",
         none: "None",
         yes: "Yes",
-        no: "No"
+        no: "No",
+        restartNotice: "Please reload the tab to apply the new language",
+        configSaved: "Configuration saved!",
+        configLoaded: "Configuration loaded",
+        configReset: "Configuration reset"
     },
     de: {
         welcome: "Willkommen",
@@ -40,6 +48,10 @@ window.TRANSLATIONS = {
         overtimeThisWeek: "Überstunden diese Woche",
         none: "Keine",
         yes: "Ja",
-        no: "Nein"
+        no: "Nein",
+        restartNotice: "Laden Sie den Tab neu, um die neue Sprache anzuwenden",
+        configSaved: "Konfiguration gespeichert!",
+        configLoaded: "Konfiguration geladen",
+        configReset: "Konfiguration zurückgesetzt"
     }
 };
