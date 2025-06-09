@@ -41,7 +41,7 @@ setTimeout(async () => {
   
       isTimeTrackingPageReady() {
         return document.body.innerText.includes(this.translations.welcome) ||
-               !!document.querySelector("#__xmlview2--gcontingent");
+               !!document.querySelector("#__xmlview2--gcontigent");
       }
   
       processTimeData() {
@@ -90,11 +90,9 @@ setTimeout(async () => {
           const match = text.match(/Écart.*:\s*([+-]?\d+):(\d{2})/);
           if (!match) return;
   
-          const hoursStr = match[1];
-          const minutes  = parseInt(match[2], 10);
-          const hoursAbs = Math.abs(parseInt(hoursStr, 10));
-          const sign     = hoursStr.trim().startsWith('-') ? -1 : 1;
-          const totalMinutes = sign * (hoursAbs * 60 + minutes);
+          const hours   = parseInt(match[1], 10);
+          const minutes = parseInt(match[2], 10);
+          const totalMinutes = (hours < 0 ? -1 : 1) * (Math.abs(hours) * 60 + minutes);
   
           let color;
           if (totalMinutes < 0) color = 'red';
@@ -121,15 +119,6 @@ setTimeout(async () => {
         const parts = timeString.split(':').map(Number);
         const now = new Date();
         return new Date(now.getFullYear(), now.getMonth(), now.getDate(), ...parts);
-      }
-
-      // Convertit une chaîne "HH:MM" en nombre d'heures décimal
-      parseTimeStringToHours(timeString) {
-        if (!timeString) return 0;
-        const [h, m = '0'] = timeString.split(':');
-        const hours = parseFloat(h);
-        const minutes = parseFloat(m);
-        return hours + minutes / 60;
       }
   
       formatHoursToTimeString(hours) {
@@ -318,7 +307,7 @@ setTimeout(async () => {
       }
   
       renderTimeTable(todayData, weekData) {
-        const tbody = document.querySelector('#__xmlview2--gcontingent tbody');
+        const tbody = document.querySelector('#__xmlview2--gcontigent tbody');
         if (!tbody) {
           console.log('Tableau introuvable !');
           return;
