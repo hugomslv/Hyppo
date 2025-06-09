@@ -72,9 +72,10 @@
                     <span class="help-text">Une ligne par nom de ligne (sensible à la casse)</span>
                 </div>
                 <div class="form-group">
-                    <label for="removeRows">Lignes à supprimer:</label>
-                    <textarea id="removeRows" rows="3" placeholder="Ligne inutile&#10;Autre ligne"></textarea>
-                    <span class="help-text">Une ligne par nom de ligne (sensible à la casse)</span>
+                    <label>Lignes du tableau:</label>
+                    <div id="rowsChecklist" class="checklist"></div>
+                    <button id="refreshRows" type="button" class="btn btn-secondary small-btn">🔄 Actualiser</button>
+                    <span class="help-text">Décochez une ligne pour la masquer</span>
                 </div>
             </section>
         </main>

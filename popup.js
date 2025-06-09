@@ -13,7 +13,8 @@ class TimeManagerPopup {
                 MINIMUM_DURATION_MINUTES: 30
             }
         };
-        
+        this.rowNames = [];
+
         this.init();
     }
 
@@ -27,30 +28,79 @@ class TimeManagerPopup {
             .addEventListener('click', () => this.saveConfiguration());
         document.getElementById('resetBtn')
             .addEventListener('click', () => this.resetConfiguration());
+        document.getElementById('refreshRows')
+            .addEventListener('click', () => this.refreshRowNames());
         this.setupAutoSave();
     }
 
     setupAutoSave() {
-        const inputs = document.querySelectorAll('input, select, textarea');
         let autoSaveTimeout;
-        inputs.forEach(input => {
-            input.addEventListener('input', () => {
-                clearTimeout(autoSaveTimeout);
-                autoSaveTimeout = setTimeout(() => {
-                    this.saveConfiguration();
-                }, 1000);
+        document.addEventListener('input', (e) => {
+            if (!e.target.matches('input, select, textarea')) return;
+            clearTimeout(autoSaveTimeout);
+            autoSaveTimeout = setTimeout(() => {
+                this.saveConfiguration();
+            }, 1000);
+        });
+    }
+
+    async refreshRowNames() {
+        this.rowNames = await this.fetchRowNames();
+        this.renderRowChecklist(this.getFormData());
+    }
+
+    fetchRowNames() {
+        return new Promise((resolve) => {
+            chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+                const tab = tabs[0];
+                if (!tab) return resolve([]);
+                chrome.scripting.executeScript(
+                    {
+                        target: { tabId: tab.id },
+                        func: () => {
+                            const cells = Array.from(document.querySelectorAll('tr[data-uid] td[role="gridcell"]'));
+                            const names = cells.map(td => td.textContent.trim()).filter(Boolean);
+                            return Array.from(new Set(names));
+                        }
+                    },
+                    (results) => {
+                        if (chrome.runtime.lastError || !results || !results[0]) {
+                            resolve([]);
+                        } else {
+                            resolve(results[0].result);
+                        }
+                    }
+                );
             });
         });
     }
 
+    renderRowChecklist(config) {
+        const container = document.getElementById('rowsChecklist');
+        container.innerHTML = '';
+        const names = Array.from(new Set([...(this.rowNames || []), ...(config.ROWS_TO_REMOVE || [])]));
+        names.forEach(name => {
+            const label = document.createElement('label');
+            const checkbox = document.createElement('input');
+            checkbox.type = 'checkbox';
+            checkbox.value = name;
+            checkbox.checked = !config.ROWS_TO_REMOVE.includes(name);
+            label.appendChild(checkbox);
+            label.appendChild(document.createTextNode(name));
+            container.appendChild(label);
+        });
+    }
+
     loadConfiguration() {
-        chrome.storage.sync.get(['timeManagerConfig'], (result) => {
+        chrome.storage.sync.get(['timeManagerConfig'], async (result) => {
             if (chrome.runtime.lastError) {
                 console.error(chrome.runtime.lastError);
+                this.rowNames = await this.fetchRowNames();
                 this.populateForm(this.defaultConfig);
                 this.showStatus('❌ Erreur de chargement', 'error');
             } else {
                 const cfg = result.timeManagerConfig || this.defaultConfig;
+                this.rowNames = await this.fetchRowNames();
                 this.populateForm(cfg);
                 this.showStatus('⚙️ Configuration chargée', 'info');
             }
@@ -65,7 +115,7 @@ class TimeManagerPopup {
         document.getElementById('lunchEnd').value = config.LUNCH_BREAK.END_HOUR;
         document.getElementById('minPause').value = config.LUNCH_BREAK.MINIMUM_DURATION_MINUTES;
         document.getElementById('convertRows').value = (config.ROWS_TO_CONVERT_TO_DAYS || []).join('\n');
-        document.getElementById('removeRows').value = (config.ROWS_TO_REMOVE || []).join('\n');
+        this.renderRowChecklist(config);
     }
 
     saveConfiguration() {
@@ -89,7 +139,10 @@ class TimeManagerPopup {
 
     getFormData() {
         const convertRowsText = document.getElementById('convertRows').value.trim();
-        const removeRowsText = document.getElementById('removeRows').value.trim();
+        const checklist = document.querySelectorAll('#rowsChecklist input[type="checkbox"]');
+        const rowsToRemove = Array.from(checklist)
+            .filter(cb => !cb.checked)
+            .map(cb => cb.value);
         return {
             DAILY_WORK_HOURS: parseFloat(document.getElementById('dailyHours').value) || this.defaultConfig.DAILY_WORK_HOURS,
             WORKING_DAYS_PER_WEEK: parseInt(document.getElementById('workingDays').value) || this.defaultConfig.WORKING_DAYS_PER_WEEK,
@@ -102,9 +155,7 @@ class TimeManagerPopup {
             ROWS_TO_CONVERT_TO_DAYS: convertRowsText
                 ? convertRowsText.split('\n').map(s => s.trim()).filter(s => s)
                 : [],
-            ROWS_TO_REMOVE: removeRowsText
-                ? removeRowsText.split('\n').map(s => s.trim()).filter(s => s)
-                : []
+            ROWS_TO_REMOVE: rowsToRemove
         };
     }
 
