@@ -1,0 +1,39 @@
+{
+    "manifest_version": 3,
+    "name": "Time Manager by Hyppo",
+    "version": "1.2.0",
+    "description": "Extension de gestion du temps avec interface de configuration",
+    "permissions": [
+        "tabs", 
+        "scripting", 
+        "storage"
+    ],
+    "host_permissions": [
+        "https://launchpad.wd.pnet.ch/*"
+    ],
+    "background": {
+        "service_worker": "background.js"
+    },
+    "content_scripts": [
+        {
+            "matches": [
+                "https://launchpad.wd.pnet.ch/*"
+            ],
+            "js": [
+                "config.js",
+                "translations.js",
+                "content.js"
+            ]
+        }
+    ],
+    "action": {
+        "default_popup": "popup.html",
+        "default_icon": "clock.png",
+        "default_title": "Time Manager - Configuration"
+    },
+    "icons": {
+        "16": "clock.png",
+        "48": "clock.png",
+        "128": "clock.png"
+    }
+}
