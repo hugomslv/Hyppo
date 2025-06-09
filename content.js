@@ -41,7 +41,7 @@ setTimeout(async () => {
   
       isTimeTrackingPageReady() {
         return document.body.innerText.includes(this.translations.welcome) ||
-               !!document.querySelector("#__xmlview2--gcontigent");
+               !!document.querySelector("#__xmlview2--gcontingent");
       }
   
       processTimeData() {
@@ -318,7 +318,7 @@ setTimeout(async () => {
       }
   
       renderTimeTable(todayData, weekData) {
-        const tbody = document.querySelector('#__xmlview2--gcontigent tbody');
+        const tbody = document.querySelector('#__xmlview2--gcontingent tbody');
         if (!tbody) {
           console.log('Tableau introuvable !');
           return;
