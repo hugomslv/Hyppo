@@ -90,9 +90,11 @@ setTimeout(async () => {
           const match = text.match(/Écart.*:\s*([+-]?\d+):(\d{2})/);
           if (!match) return;
   
-          const hours   = parseInt(match[1], 10);
-          const minutes = parseInt(match[2], 10);
-          const totalMinutes = (hours < 0 ? -1 : 1) * (Math.abs(hours) * 60 + minutes);
+          const hoursStr = match[1];
+          const minutes  = parseInt(match[2], 10);
+          const hoursAbs = Math.abs(parseInt(hoursStr, 10));
+          const sign     = hoursStr.trim().startsWith('-') ? -1 : 1;
+          const totalMinutes = sign * (hoursAbs * 60 + minutes);
   
           let color;
           if (totalMinutes < 0) color = 'red';
