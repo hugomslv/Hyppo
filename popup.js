@@ -22,6 +22,7 @@ class TimeManagerPopup {
     init() {
         this.bindEvents();
         this.loadConfiguration();
+        this.applyTranslations();
     }
 
     bindEvents() {
@@ -38,6 +39,20 @@ class TimeManagerPopup {
         document.getElementById('addRemoveRowBtn')
             .addEventListener('click', () => this.addItem('removeRows'));
         this.setupAutoSave();
+    }
+
+    applyTranslations() {
+        document.querySelectorAll('[data-i18n]').forEach(el => {
+            const keys = el.getAttribute('data-i18n').split('.');
+            let txt = this.translations;
+            keys.forEach(k => { if (txt) txt = txt[k]; });
+            if (!txt) return;
+            if (el.tagName === 'TITLE') {
+                document.title = txt;
+            } else {
+                el.textContent = txt;
+            }
+        });
     }
 
     setupAutoSave() {
@@ -109,8 +124,10 @@ class TimeManagerPopup {
     onLanguageChange(event) {
         const select = event.target;
         this.translations = window.TRANSLATIONS[select.value] || this.translations;
+        document.documentElement.lang = select.value;
         select.classList.add('lang-changed');
         setTimeout(() => select.classList.remove('lang-changed'), 1200);
+        this.applyTranslations();
     }
 
     loadConfiguration() {
@@ -123,6 +140,8 @@ class TimeManagerPopup {
                 const cfg = result.timeManagerConfig || this.defaultConfig;
                 this.populateForm(cfg);
                 this.translations = window.TRANSLATIONS[cfg.LANGUAGE] || this.translations;
+                document.documentElement.lang = cfg.LANGUAGE;
+                this.applyTranslations();
                 const loadedMsg = this.translations.configLoaded || 'Configuration chargée';
                 this.showStatus(`⚙️ ${loadedMsg}`, 'info');
             }
@@ -154,6 +173,7 @@ class TimeManagerPopup {
                 this.showStatus('❌ Erreur de sauvegarde', 'error');
             } else {
                 this.translations = window.TRANSLATIONS[config.LANGUAGE] || this.translations;
+                this.applyTranslations();
                 const msg = this.translations.restartNotice || '';
                 const saved = this.translations.configSaved || 'Configuration sauvegardée !';
                 this.showStatus(`✅ ${saved} ${msg}`, 'success');
@@ -202,6 +222,8 @@ class TimeManagerPopup {
             } else {
                 this.populateForm(this.defaultConfig);
                 this.translations = window.TRANSLATIONS[this.defaultConfig.LANGUAGE] || this.translations;
+                document.documentElement.lang = this.defaultConfig.LANGUAGE;
+                this.applyTranslations();
                 const resetMsg = this.translations.configReset || 'Configuration réinitialisée';
                 this.showStatus(`🔄 ${resetMsg}`, 'info');
             }
