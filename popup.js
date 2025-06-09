@@ -13,7 +13,9 @@ class TimeManagerPopup {
                 MINIMUM_DURATION_MINUTES: 30
             }
         };
-        
+
+        this.translations = window.TRANSLATIONS['fr'];
+
         this.init();
     }
 
@@ -27,6 +29,8 @@ class TimeManagerPopup {
             .addEventListener('click', () => this.saveConfiguration());
         document.getElementById('resetBtn')
             .addEventListener('click', () => this.resetConfiguration());
+        document.getElementById('language')
+            .addEventListener('change', (e) => this.onLanguageChange(e));
         this.setupAutoSave();
     }
 
@@ -43,6 +47,13 @@ class TimeManagerPopup {
         });
     }
 
+    onLanguageChange(event) {
+        const select = event.target;
+        this.translations = window.TRANSLATIONS[select.value] || this.translations;
+        select.classList.add('lang-changed');
+        setTimeout(() => select.classList.remove('lang-changed'), 1200);
+    }
+
     loadConfiguration() {
         chrome.storage.sync.get(['timeManagerConfig'], (result) => {
             if (chrome.runtime.lastError) {
@@ -52,7 +63,9 @@ class TimeManagerPopup {
             } else {
                 const cfg = result.timeManagerConfig || this.defaultConfig;
                 this.populateForm(cfg);
-                this.showStatus('⚙️ Configuration chargée', 'info');
+                this.translations = window.TRANSLATIONS[cfg.LANGUAGE] || this.translations;
+                const loadedMsg = this.translations.configLoaded || 'Configuration chargée';
+                this.showStatus(`⚙️ ${loadedMsg}`, 'info');
             }
         });
     }
@@ -81,7 +94,10 @@ class TimeManagerPopup {
                 console.error(chrome.runtime.lastError);
                 this.showStatus('❌ Erreur de sauvegarde', 'error');
             } else {
-                this.showStatus('✅ Configuration sauvegardée !', 'success');
+                this.translations = window.TRANSLATIONS[config.LANGUAGE] || this.translations;
+                const msg = this.translations.restartNotice || '';
+                const saved = this.translations.configSaved || 'Configuration sauvegardée !';
+                this.showStatus(`✅ ${saved} ${msg}`, 'success');
                 this.reloadActiveTab();
             }
         });
@@ -132,7 +148,9 @@ class TimeManagerPopup {
                 this.showStatus('❌ Erreur de réinitialisation', 'error');
             } else {
                 this.populateForm(this.defaultConfig);
-                this.showStatus('🔄 Configuration réinitialisée', 'info');
+                this.translations = window.TRANSLATIONS[this.defaultConfig.LANGUAGE] || this.translations;
+                const resetMsg = this.translations.configReset || 'Configuration réinitialisée';
+                this.showStatus(`🔄 ${resetMsg}`, 'info');
             }
         });
     }
