@@ -120,6 +120,13 @@ setTimeout(async () => {
         const now = new Date();
         return new Date(now.getFullYear(), now.getMonth(), now.getDate(), ...parts);
       }
+
+      // Convertit une chaîne "HH:MM" en nombre d'heures décimal
+      parseTimeStringToHours(timeString) {
+        if (!timeString || timeString === '-') return 0;
+        const [hours, minutes] = timeString.split(':').map(Number);
+        return hours + (minutes || 0) / 60;
+      }
   
       formatHoursToTimeString(hours) {
         const totalMinutes = Math.round(hours * 60);
