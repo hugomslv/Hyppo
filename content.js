@@ -123,9 +123,11 @@ setTimeout(async () => {
 
       // Convertit une chaîne "HH:MM" en nombre d'heures décimal
       parseTimeStringToHours(timeString) {
-        if (!timeString || timeString === '-') return 0;
-        const [hours, minutes] = timeString.split(':').map(Number);
-        return hours + (minutes || 0) / 60;
+        if (!timeString) return 0;
+        const [h, m = '0'] = timeString.split(':');
+        const hours = parseFloat(h);
+        const minutes = parseFloat(m);
+        return hours + minutes / 60;
       }
   
       formatHoursToTimeString(hours) {
