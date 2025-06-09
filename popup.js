@@ -47,6 +47,7 @@ class TimeManagerPopup {
     async refreshRowNames() {
         this.rowNames = await this.fetchRowNames();
         this.renderRowChecklist(this.getFormData());
+        this.renderConvertChecklist(this.getFormData());
     }
 
     fetchRowNames() {
@@ -91,6 +92,22 @@ class TimeManagerPopup {
         });
     }
 
+    renderConvertChecklist(config) {
+        const container = document.getElementById('convertRowsChecklist');
+        container.innerHTML = '';
+        const names = Array.from(new Set([...(this.rowNames || []), ...(config.ROWS_TO_CONVERT_TO_DAYS || [])]));
+        names.forEach(name => {
+            const label = document.createElement('label');
+            const checkbox = document.createElement('input');
+            checkbox.type = 'checkbox';
+            checkbox.value = name;
+            checkbox.checked = config.ROWS_TO_CONVERT_TO_DAYS.includes(name);
+            label.appendChild(checkbox);
+            label.appendChild(document.createTextNode(name));
+            container.appendChild(label);
+        });
+    }
+
     loadConfiguration() {
         chrome.storage.sync.get(['timeManagerConfig'], async (result) => {
             if (chrome.runtime.lastError) {
@@ -114,8 +131,8 @@ class TimeManagerPopup {
         document.getElementById('lunchStart').value = config.LUNCH_BREAK.START_HOUR;
         document.getElementById('lunchEnd').value = config.LUNCH_BREAK.END_HOUR;
         document.getElementById('minPause').value = config.LUNCH_BREAK.MINIMUM_DURATION_MINUTES;
-        document.getElementById('convertRows').value = (config.ROWS_TO_CONVERT_TO_DAYS || []).join('\n');
         this.renderRowChecklist(config);
+        this.renderConvertChecklist(config);
     }
 
     saveConfiguration() {
@@ -138,7 +155,10 @@ class TimeManagerPopup {
     }
 
     getFormData() {
-        const convertRowsText = document.getElementById('convertRows').value.trim();
+        const convertChecklist = document.querySelectorAll('#convertRowsChecklist input[type="checkbox"]');
+        const rowsToConvert = Array.from(convertChecklist)
+            .filter(cb => cb.checked)
+            .map(cb => cb.value);
         const checklist = document.querySelectorAll('#rowsChecklist input[type="checkbox"]');
         const rowsToRemove = Array.from(checklist)
             .filter(cb => !cb.checked)
@@ -152,9 +172,7 @@ class TimeManagerPopup {
                 END_HOUR: parseInt(document.getElementById('lunchEnd').value) || this.defaultConfig.LUNCH_BREAK.END_HOUR,
                 MINIMUM_DURATION_MINUTES: parseInt(document.getElementById('minPause').value) || this.defaultConfig.LUNCH_BREAK.MINIMUM_DURATION_MINUTES
             },
-            ROWS_TO_CONVERT_TO_DAYS: convertRowsText
-                ? convertRowsText.split('\n').map(s => s.trim()).filter(s => s)
-                : [],
+            ROWS_TO_CONVERT_TO_DAYS: rowsToConvert,
             ROWS_TO_REMOVE: rowsToRemove
         };
     }

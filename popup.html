@@ -67,16 +67,16 @@
             <section class="config-section">
                 <h2>📊 Personnalisation du tableau</h2>
                 <div class="form-group">
-                    <label for="convertRows">Lignes à convertir en jours:</label>
-                    <textarea id="convertRows" rows="3" placeholder="Vacances&#10;Congés payés&#10;Formation"></textarea>
-                    <span class="help-text">Une ligne par nom de ligne (sensible à la casse)</span>
+                    <label>Lignes à convertir en jours:</label>
+                    <div id="convertRowsChecklist" class="checklist"></div>
+                    <span class="help-text">Cochez pour convertir les heures en jours</span>
                 </div>
                 <div class="form-group">
                     <label>Lignes du tableau:</label>
                     <div id="rowsChecklist" class="checklist"></div>
-                    <button id="refreshRows" type="button" class="btn btn-secondary small-btn">🔄 Actualiser</button>
                     <span class="help-text">Décochez une ligne pour la masquer</span>
                 </div>
+                <button id="refreshRows" type="button" class="btn btn-secondary small-btn">🔄 Actualiser</button>
             </section>
         </main>
 
