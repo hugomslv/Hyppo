@@ -17,6 +17,10 @@ window.TRANSLATIONS = {
         configSaved: "Configuration sauvegardée !",
         configLoaded: "Configuration chargée",
         configReset: "Configuration réinitialisée",
+        saveError: "Erreur de sauvegarde",
+        loadError: "Erreur de chargement",
+        resetError: "Erreur de réinitialisation",
+        resetConfirm: "Êtes-vous sûr de vouloir réinitialiser la configuration ?",
         popup: {
             title: "Time Manager - Configuration",
             subtitle: "Configuration",
@@ -34,7 +38,10 @@ window.TRANSLATIONS = {
             convertRowsLabel: "Lignes à convertir en jours:",
             removeRowsLabel: "Lignes à supprimer:",
             resetButton: "🔄 Réinitialiser",
-            saveButton: "💾 Sauvegarder"
+            saveButton: "💾 Sauvegarder",
+            refreshButton: "🔃 Rafraîchir",
+            addButton: "Ajouter",
+            newRowPlaceholder: "Nouvelle ligne"
         }
     },
     en: {
@@ -54,6 +61,10 @@ window.TRANSLATIONS = {
         configSaved: "Configuration saved!",
         configLoaded: "Configuration loaded",
         configReset: "Configuration reset",
+        saveError: "Save error",
+        loadError: "Load error",
+        resetError: "Reset error",
+        resetConfirm: "Are you sure you want to reset the configuration?",
         popup: {
             title: "Time Manager - Settings",
             subtitle: "Settings",
@@ -71,7 +82,10 @@ window.TRANSLATIONS = {
             convertRowsLabel: "Rows to convert to days:",
             removeRowsLabel: "Rows to remove:",
             resetButton: "🔄 Reset",
-            saveButton: "💾 Save"
+            saveButton: "💾 Save",
+            refreshButton: "🔃 Refresh",
+            addButton: "Add",
+            newRowPlaceholder: "New row"
         }
     },
     de: {
@@ -91,6 +105,10 @@ window.TRANSLATIONS = {
         configSaved: "Konfiguration gespeichert!",
         configLoaded: "Konfiguration geladen",
         configReset: "Konfiguration zurückgesetzt",
+        saveError: "Fehler beim Speichern",
+        loadError: "Fehler beim Laden",
+        resetError: "Fehler beim Zurücksetzen",
+        resetConfirm: "Möchten Sie die Konfiguration wirklich zurücksetzen?",
         popup: {
             title: "Time Manager - Einstellungen",
             subtitle: "Einstellungen",
@@ -108,7 +126,10 @@ window.TRANSLATIONS = {
             convertRowsLabel: "Zeilen zu Tagen konvertieren:",
             removeRowsLabel: "Zeilen entfernen:",
             resetButton: "🔄 Zurücksetzen",
-            saveButton: "💾 Speichern"
+            saveButton: "💾 Speichern",
+            refreshButton: "🔃 Aktualisieren",
+            addButton: "Hinzufügen",
+            newRowPlaceholder: "Neue Zeile"
         }
     }
 };

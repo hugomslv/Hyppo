@@ -68,19 +68,19 @@
             <section class="config-section">
                 <h2 data-i18n="popup.tableTitle">📊 Personnalisation du tableau</h2>
                 <div class="form-group">
-                    <label>Lignes à convertir en jours:</label>
+                    <label data-i18n="popup.convertRowsLabel">Lignes à convertir en jours:</label>
                     <ul id="convertRowsList" class="checkbox-list"></ul>
                     <div class="checkbox-add">
-                        <input type="text" id="convertRowsInput" placeholder="Nouvelle ligne">
-                        <button id="addConvertRowBtn" class="btn btn-secondary small-btn">Ajouter</button>
+                        <input type="text" id="convertRowsInput" placeholder="Nouvelle ligne" data-i18n-placeholder="popup.newRowPlaceholder">
+                        <button id="addConvertRowBtn" class="btn btn-secondary small-btn" data-i18n="popup.addButton">Ajouter</button>
                     </div>
                 </div>
                 <div class="form-group">
-                    <label>Lignes à supprimer:</label>
+                    <label data-i18n="popup.removeRowsLabel">Lignes à supprimer:</label>
                     <ul id="removeRowsList" class="checkbox-list"></ul>
                     <div class="checkbox-add">
-                        <input type="text" id="removeRowsInput" placeholder="Nouvelle ligne">
-                        <button id="addRemoveRowBtn" class="btn btn-secondary small-btn">Ajouter</button>
+                        <input type="text" id="removeRowsInput" placeholder="Nouvelle ligne" data-i18n-placeholder="popup.newRowPlaceholder">
+                        <button id="addRemoveRowBtn" class="btn btn-secondary small-btn" data-i18n="popup.addButton">Ajouter</button>
                     </div>
                 </div>
             </section>
@@ -88,9 +88,9 @@
 
         <footer class="footer">
             <div class="button-group">
-                <button id="resetBtn" class="btn btn-secondary">🔄 Réinitialiser</button>
-                <button id="saveBtn" class="btn btn-primary">💾 Sauvegarder</button>
-                <button id="refreshBtn" class="btn btn-secondary">🔃 Rafraîchir</button>
+                <button id="resetBtn" class="btn btn-secondary" data-i18n="popup.resetButton">🔄 Réinitialiser</button>
+                <button id="saveBtn" class="btn btn-primary" data-i18n="popup.saveButton">💾 Sauvegarder</button>
+                <button id="refreshBtn" class="btn btn-secondary" data-i18n="popup.refreshButton">🔃 Rafraîchir</button>
             </div>
             <div class="status" id="status"></div>
         </footer>
