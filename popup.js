@@ -29,8 +29,14 @@ class TimeManagerPopup {
             .addEventListener('click', () => this.saveConfiguration());
         document.getElementById('resetBtn')
             .addEventListener('click', () => this.resetConfiguration());
+        document.getElementById('refreshBtn')
+            .addEventListener('click', () => this.reloadActiveTab());
         document.getElementById('language')
             .addEventListener('change', (e) => this.onLanguageChange(e));
+        document.getElementById('addConvertRowBtn')
+            .addEventListener('click', () => this.addItem('convertRows'));
+        document.getElementById('addRemoveRowBtn')
+            .addEventListener('click', () => this.addItem('removeRows'));
         this.setupAutoSave();
     }
 
@@ -38,13 +44,66 @@ class TimeManagerPopup {
         const inputs = document.querySelectorAll('input, select, textarea');
         let autoSaveTimeout;
         inputs.forEach(input => {
-            input.addEventListener('input', () => {
+            const handler = () => {
                 clearTimeout(autoSaveTimeout);
                 autoSaveTimeout = setTimeout(() => {
                     this.saveConfiguration();
                 }, 1000);
-            });
+            };
+            input.addEventListener('input', handler);
+            input.addEventListener('change', handler);
         });
+    }
+
+    renderList(listId, items) {
+        const list = document.getElementById(listId);
+        list.innerHTML = '';
+        items.forEach(text => this.addListItem(listId, text, true));
+        this.setupAutoSave();
+    }
+
+    addListItem(listId, text, checked = true) {
+        const list = document.getElementById(listId);
+        const li = document.createElement('li');
+        const label = document.createElement('label');
+        const checkbox = document.createElement('input');
+        checkbox.type = 'checkbox';
+        checkbox.checked = checked;
+        const span = document.createElement('span');
+        span.textContent = text;
+        const remove = document.createElement('button');
+        remove.type = 'button';
+        remove.textContent = '✖';
+        remove.className = 'small-btn';
+        remove.addEventListener('click', () => {
+            li.remove();
+            this.saveConfiguration();
+        });
+        label.appendChild(checkbox);
+        label.appendChild(span);
+        li.appendChild(label);
+        li.appendChild(remove);
+        list.appendChild(li);
+    }
+
+    addItem(type) {
+        const input = document.getElementById(type + 'Input');
+        const value = input.value.trim();
+        if (!value) return;
+        this.addListItem(type + 'List', value, true);
+        input.value = '';
+        this.setupAutoSave();
+    }
+
+    getListData(listId) {
+        const list = document.getElementById(listId);
+        const arr = [];
+        list.querySelectorAll('li').forEach(li => {
+            const cb = li.querySelector('input[type="checkbox"]');
+            const text = li.querySelector('span').textContent.trim();
+            if (cb.checked && text) arr.push(text);
+        });
+        return arr;
     }
 
     onLanguageChange(event) {
@@ -77,8 +136,8 @@ class TimeManagerPopup {
         document.getElementById('lunchStart').value = config.LUNCH_BREAK.START_HOUR;
         document.getElementById('lunchEnd').value = config.LUNCH_BREAK.END_HOUR;
         document.getElementById('minPause').value = config.LUNCH_BREAK.MINIMUM_DURATION_MINUTES;
-        document.getElementById('convertRows').value = (config.ROWS_TO_CONVERT_TO_DAYS || []).join('\n');
-        document.getElementById('removeRows').value = (config.ROWS_TO_REMOVE || []).join('\n');
+        this.renderList('convertRowsList', config.ROWS_TO_CONVERT_TO_DAYS || []);
+        this.renderList('removeRowsList', config.ROWS_TO_REMOVE || []);
     }
 
     saveConfiguration() {
@@ -104,8 +163,6 @@ class TimeManagerPopup {
     }
 
     getFormData() {
-        const convertRowsText = document.getElementById('convertRows').value.trim();
-        const removeRowsText = document.getElementById('removeRows').value.trim();
         return {
             DAILY_WORK_HOURS: parseFloat(document.getElementById('dailyHours').value) || this.defaultConfig.DAILY_WORK_HOURS,
             WORKING_DAYS_PER_WEEK: parseInt(document.getElementById('workingDays').value) || this.defaultConfig.WORKING_DAYS_PER_WEEK,
@@ -115,12 +172,8 @@ class TimeManagerPopup {
                 END_HOUR: parseInt(document.getElementById('lunchEnd').value) || this.defaultConfig.LUNCH_BREAK.END_HOUR,
                 MINIMUM_DURATION_MINUTES: parseInt(document.getElementById('minPause').value) || this.defaultConfig.LUNCH_BREAK.MINIMUM_DURATION_MINUTES
             },
-            ROWS_TO_CONVERT_TO_DAYS: convertRowsText
-                ? convertRowsText.split('\n').map(s => s.trim()).filter(s => s)
-                : [],
-            ROWS_TO_REMOVE: removeRowsText
-                ? removeRowsText.split('\n').map(s => s.trim()).filter(s => s)
-                : []
+            ROWS_TO_CONVERT_TO_DAYS: this.getListData('convertRowsList'),
+            ROWS_TO_REMOVE: this.getListData('removeRowsList')
         };
     }
 

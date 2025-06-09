@@ -236,6 +236,30 @@ textarea {
     animation: statusFadeIn 0.3s ease-out;
 }
 
+/* List styles */
+.checkbox-list {
+    list-style: none;
+    margin: 0 0 8px 0;
+    padding: 0;
+}
+.checkbox-list li {
+    display: flex;
+    align-items: center;
+    margin-bottom: 4px;
+}
+.checkbox-list li label {
+    flex: 1;
+}
+.checkbox-add {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+.small-btn {
+    padding: 8px 12px;
+    font-size: 12px;
+}
+
 @keyframes statusFadeIn {
     from {
         opacity: 0;
