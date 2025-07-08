@@ -226,6 +226,88 @@ class TimeManagerPopup {
     }
 }
 
+class SimpleTimeCalculator {
+    constructor() {
+        this.weekTotalMinutes = 0;
+        this.bindEvents();
+        this.addRow();
+    }
+
+    bindEvents() {
+        document.getElementById('addLineBtn')?.addEventListener('click', () => this.addRow());
+        document.getElementById('addDayToWeekBtn')?.addEventListener('click', () => this.addDayToWeek());
+        document.getElementById('resetWeekBtn')?.addEventListener('click', () => this.resetWeek());
+    }
+
+    addRow() {
+        const tbody = document.querySelector('#calcTable tbody');
+        if (!tbody) return;
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+            <td><input type="time" class="start"></td>
+            <td><input type="time" class="end"></td>
+            <td><input type="number" class="pause" value="0" min="0" step="5"></td>
+            <td><button type="button" class="remove-row">✖️</button></td>`;
+        tr.querySelector('.remove-row').addEventListener('click', () => {
+            tr.remove();
+            this.updateDayTotal();
+        });
+        ['input', 'change'].forEach(evt => {
+            tr.querySelectorAll('input').forEach(inp => inp.addEventListener(evt, () => this.updateDayTotal()));
+        });
+        tbody.appendChild(tr);
+        this.updateDayTotal();
+    }
+
+    parseTimeToMinutes(value) {
+        if (!value) return 0;
+        const [h, m] = value.split(':').map(Number);
+        return h * 60 + m;
+    }
+
+    diffMinutes(start, end, pause) {
+        let diff = end - start;
+        if (diff < 0) diff += 1440;
+        diff -= pause;
+        return diff > 0 ? diff : 0;
+    }
+
+    updateDayTotal() {
+        const tbody = document.querySelector('#calcTable tbody');
+        let total = 0;
+        tbody.querySelectorAll('tr').forEach(tr => {
+            const start = this.parseTimeToMinutes(tr.querySelector('.start').value);
+            const end = this.parseTimeToMinutes(tr.querySelector('.end').value);
+            const pause = parseInt(tr.querySelector('.pause').value) || 0;
+            total += this.diffMinutes(start, end, pause);
+        });
+        document.getElementById('dayTotal').textContent = this.formatTotals(total);
+        return total;
+    }
+
+    formatTotals(mins) {
+        const h = Math.floor(mins / 60);
+        const m = mins % 60;
+        const dec = (mins / 60).toFixed(2).replace('.', ',');
+        return `${h}:${m.toString().padStart(2,'0')} (${dec})`;
+    }
+
+    addDayToWeek() {
+        this.weekTotalMinutes += this.updateDayTotal();
+        this.updateWeekDisplay();
+    }
+
+    resetWeek() {
+        this.weekTotalMinutes = 0;
+        this.updateWeekDisplay();
+    }
+
+    updateWeekDisplay() {
+        document.getElementById('weekTotal').textContent = this.formatTotals(this.weekTotalMinutes);
+    }
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     new TimeManagerPopup();
+    new SimpleTimeCalculator();
 });

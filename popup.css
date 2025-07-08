@@ -34,7 +34,7 @@ body {
 }
 
 .header {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #ffcc00 0%, #764ba2 100%);
     color: white;
     padding: 20px;
     text-align: center;
@@ -84,6 +84,11 @@ body {
     background: #f8f9fa;
     border-radius: 8px;
     border-left: 4px solid #667eea;
+}
+
+#calculatorSection {
+    border-left-color: #ffcc00;
+    background: #fff6cc;
 }
 
 .config-section h2 {
@@ -174,13 +179,13 @@ textarea {
 }
 
 .btn-primary {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #ffcc00 0%, #764ba2 100%);
     color: white;
 }
 
 .btn-primary:hover {
     transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+    box-shadow: 0 4px 12px rgba(255, 204, 0, 0.4);
 }
 
 .btn-secondary {
@@ -258,4 +263,29 @@ textarea {
         opacity: 1;
         transform: translateY(0);
     }
+}
+
+/* Styles pour le calculateur d'horaires */
+#calcTable {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 8px;
+}
+
+#calcTable th,
+#calcTable td {
+    border: 1px solid #e1e5e9;
+    padding: 6px;
+    text-align: center;
+}
+
+#calcTable th {
+    background: #f1f1f1;
+}
+
+.remove-row {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #dc3545;
 }
