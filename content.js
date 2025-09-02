@@ -217,7 +217,7 @@
         totalWorked: totalToday,
         totalWorkedThisWeek: totalWeek,
         remainingTime: remaining,
-        estimatedEndTime: this.calculateEstimatedEndTime(remaining),
+        estimatedEndTime: this.calculateEstimatedEndTime(remaining, pause.pauseDetected),
         pauseDetected: pause.pauseDetected,
         pauseAdded: pause.pauseAdded
       };
@@ -268,11 +268,14 @@
       const timeText = (entry.textContent || '').replace('Horodatage', '').trim();
       return this.timeUtils.parseTimeStringToDate(timeText);
     }
-    calculateEstimatedEndTime(remainingMs) {
-      if (remainingMs <= 0) return '—';
-      const end = new Date(Date.now() + remainingMs);
-      return end.toTimeString().slice(0,5);
-    }
+  calculateEstimatedEndTime(remainingMs, pauseDetected) {
+    if (remainingMs <= 0) return '—';
+    // Si aucune pause minimale n’a été détectée, on ajoute la pause mini à l’heure de fin
+    const extraPauseMs = pauseDetected ? 0 : (this.config.LUNCH_BREAK.MINIMUM_DURATION_MINUTES * 60000);
+    const end = new Date(Date.now() + remainingMs + extraPauseMs);
+    end.setSeconds(0, 0); // arrondi à la minute
+    return end.toTimeString().slice(0, 5);
+  }
   }
 
   // ===================================
@@ -306,20 +309,49 @@
       });
       console.log('[TimeManager] Données ajoutées au tableau');
     }
-    createTableRows(todayData, weekData) {
-      const dailyHours = this.timeUtils.config.DAILY_WORK_HOURS;
-      const rows = [];
-      rows.push(this.createRow(this.translations.workHours, this.timeUtils.formatHoursToTimeString(todayData.totalWorked / 3600000)));
-      rows.push(this.createRow(`${this.translations.timeRemaining} (${this.timeUtils.formatHoursToTimeString(dailyHours)})`,
-        this.timeUtils.formatHoursToTimeString(Math.abs(todayData.remainingTime) / 3600000)));
-      rows.push(this.createRow(this.translations.estimatedEnd, todayData.estimatedEndTime));
-      rows.push(this.createRow(this.translations.pauseDetected, todayData.pauseDetected ? this.translations.yes : this.translations.no));
-      rows.push(this.createRow(this.translations.pauseAdded,
-        todayData.pauseAdded > 0 ? Math.floor(todayData.pauseAdded / 60000) + ' min' : this.translations.none));
-      rows.push(this.createRow(weekData.isOvertime ? this.translations.overtimeThisWeek : this.translations.remainingWeekTime,
-        this.timeUtils.formatHoursToTimeString(Math.abs(weekData.remainingTime) / 3600000)));
-      return rows;
-    }
+createTableRows(todayData, weekData) {
+  const dailyHours = this.timeUtils.config.DAILY_WORK_HOURS;
+
+  // libellé “temps restant” ou “dépassé de”
+  const remainingLabel =
+    (todayData.remainingTime > 0
+      ? (this.translations.timeRemaining || "Temps restant aujourd'hui")
+      : (this.translations.timeExceeded || "Temps dépassé")) +
+    ` (${this.timeUtils.formatHoursToTimeString(dailyHours)})`;
+
+  // libellé “fin prévue” ou “fin prévue (pause incluse)”
+  const endLabel =
+    todayData.pauseDetected
+      ? (this.translations.estimatedEnd || "Heure de fin estimée")
+      : (this.translations.estimatedEndPlusPause || "Heure de fin estimée (pause incluse)");
+
+  const rows = [];
+  rows.push(this.createRow(
+    this.translations.workHours || "Temps traité aujourd'hui",
+    this.timeUtils.formatHoursToTimeString(todayData.totalWorked / 3600000)
+  ));
+  rows.push(this.createRow(
+    remainingLabel,
+    this.timeUtils.formatHoursToTimeString(Math.abs(todayData.remainingTime) / 3600000)
+  ));
+  rows.push(this.createRow(endLabel, todayData.estimatedEndTime));
+  rows.push(this.createRow(
+    this.translations.pauseDetected || "Pause détectée",
+    todayData.pauseDetected ? (this.translations.yes || "Oui") : (this.translations.no || "Non")
+  ));
+  rows.push(this.createRow(
+    this.translations.pauseAdded || "Pause ajoutée",
+    todayData.pauseAdded > 0 ? Math.floor(todayData.pauseAdded / 60000) + ' min' : (this.translations.none || '—')
+  ));
+  rows.push(this.createRow(
+    weekData.isOvertime
+      ? (this.translations.overtimeThisWeek || "Heures supp. cette semaine")
+      : (this.translations.remainingWeekTime || "Temps restant cette semaine"),
+    this.timeUtils.formatHoursToTimeString(Math.abs(weekData.remainingTime) / 3600000)
+  ));
+  return rows;
+}
+
     createRow(label, value) {
       return `<td role="gridcell" colspan="2">${label}</td><td role="gridcell" style="text-align:right;">${value}</td>`;
     }

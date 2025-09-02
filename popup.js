@@ -232,7 +232,7 @@ class TimeManagerPopup {
       ROWS_TO_REMOVE: rowsToRemove
     };
 
-    if (!useValidation) return config;
+    if (!useValidation){return config} ;
     return config;
   }
 
