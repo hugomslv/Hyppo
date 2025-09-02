@@ -14,17 +14,14 @@
     "background": {
         "service_worker": "background.js"
     },
-    "content_scripts": [
-        {
-            "matches": [
-                "https://launchpad.wd.pnet.ch/*"
-            ],
-            "js": [
-                "config.js",
-                "translations.js",
-                "content.js"
-            ]
-        }
+      "content_scripts": [
+    {
+      "matches": ["*://*.pnet.ch/*", "*://*.workday.com/*", "*://*/launchpad.wd.pnet.ch/*"],
+      "js": ["config.js", "translations.js", "content.js"],
+      "run_at": "document_idle",
+      "all_frames": true,
+      "match_about_blank": true
+    }
     ],
     "action": {
         "default_popup": "popup.html",

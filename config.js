@@ -4,16 +4,14 @@ window.TIME_MANAGER_CONFIG = null;
 
 // Configuration par défaut
 const DEFAULT_CONFIG = {
-    DAILY_WORK_HOURS: 8.4,
-    WORKING_DAYS_PER_WEEK: 5,
-    LANGUAGE: 'fr',
-    ROWS_TO_CONVERT_TO_DAYS: [],
-    ROWS_TO_REMOVE: [],
-    LUNCH_BREAK: {
-        START_HOUR: 11,
-        END_HOUR: 14,
-        MINIMUM_DURATION_MINUTES: 30
-    }
+  WEEKLY_BASE_HOURS: 42,
+  WORKLOAD_PERCENT: 100,
+  DAILY_WORK_HOURS: 8.4,
+  WORKING_DAYS_PER_WEEK: 5,
+  LANGUAGE: 'fr',
+  ROWS_TO_CONVERT_TO_DAYS: [],
+  ROWS_TO_REMOVE: [],
+  LUNCH_BREAK: { START_HOUR: 11, END_HOUR: 14, MINIMUM_DURATION_MINUTES: 30 }
 };
 
 // Chargement de la configuration depuis le storage
