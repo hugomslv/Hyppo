@@ -232,11 +232,14 @@ class TimeManagerPopup {
       ROWS_TO_REMOVE: rowsToRemove
     };
 
-    if (!useValidation){return config} ;
+    if (!useValidation) { return config; }
     return config;
   }
 
   validateConfiguration(config) {
+    if (config.WEEKLY_BASE_HOURS == null || config.WEEKLY_BASE_HOURS < 1 || config.WEEKLY_BASE_HOURS > 60) {
+      return { isValid: false, error: 'Les heures de base par semaine doivent être entre 1 et 60' };
+    }
     if (config.DAILY_WORK_HOURS < 0 || config.DAILY_WORK_HOURS > 12) {
       return { isValid: false, error: 'Les heures par jour doivent être entre 0 et 12' };
     }

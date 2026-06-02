@@ -158,6 +158,9 @@
     getCurrentDateFormatted() {
       return new Date().toLocaleDateString('fr-FR', { weekday: 'long', day: '2-digit', month: '2-digit', year: 'numeric' });
     }
+    getCurrentDateShort() {
+      return new Date().toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric' });
+    }
     getMillisecondsInDay()  { return this.config.DAILY_WORK_HOURS * 3600000; }
     getMillisecondsInWeek() { return this.getMillisecondsInDay() * (this.config.WORKING_DAYS_PER_WEEK || 5); }
   }
@@ -212,7 +215,7 @@
       const events = this.calculateEventTime();     totalToday += events.today; totalWeek += events.week;
       const pause  = this.pauseCalculator.calculatePauseAdjustment();
       const dayTarget = this.timeUtils.getMillisecondsInDay();
-      const remaining = Math.max(0, dayTarget - totalToday + pause.pauseAdded);
+      const remaining = dayTarget - totalToday + pause.pauseAdded;
       return {
         totalWorked: totalToday,
         totalWorkedThisWeek: totalWeek,
@@ -234,16 +237,17 @@
     }
     calculateSchedulerTime() {
       let today = 0, week = 0;
-      const todayDate = this.timeUtils.getCurrentDateFormatted();
+      const todayDateShort = this.timeUtils.getCurrentDateShort();
+      const todayDateFull  = this.timeUtils.getCurrentDateFormatted();
       const dayHeaders = qsaAllFrames('.k-scheduler-header-wrap .k-nav-day');
       dayHeaders.forEach(({ el }) => {
-        const headerText  = el.querySelector('strong')?.textContent?.trim();
+        const headerText  = el.querySelector('strong')?.textContent?.trim() || '';
         const contentText = el.querySelector('div:last-child')?.textContent || '';
         const match = contentText.match(/Temps traité:\s*([0-9]{1,2}):(\d{2})/);
         if (match) {
           const ms = this.timeUtils.parseTimeStringToMilliseconds(`${match[1]}:${match[2]}`);
           week += ms;
-          if (headerText && headerText.includes(todayDate)) today += ms;
+          if (headerText.includes(todayDateShort) || headerText.includes(todayDateFull)) today += ms;
         }
       });
       return { today, week };
@@ -256,11 +260,11 @@
       for (let i = 1; i < entries.length; i += 2) {
         const start = this.extractTimeFromEntry(entries[i - 1]);
         const end   = this.extractTimeFromEntry(entries[i]);
-        if (start && end) { const diff = end - start; today += diff; week += diff; }
+        if (start && end && end > start) { const diff = end - start; today += diff; week += diff; }
       }
       if (entries.length % 2 === 1) {
         const last = this.extractTimeFromEntry(entries[entries.length - 1]);
-        if (last) { const diff = Date.now() - last.getTime(); today += diff; week += diff; }
+        if (last && last.getTime() < Date.now()) { const diff = Date.now() - last.getTime(); today += diff; week += diff; }
       }
       return { today, week };
     }
@@ -374,8 +378,11 @@ createTableRows(todayData, weekData) {
       card.innerHTML = `
         <div style="font-weight:600;margin-bottom:6px;">Time Manager</div>
         ${h(this.translations.workHours, this.timeUtils.formatHoursToTimeString(todayData.totalWorked / 3600000))}
-        ${h(`${this.translations.timeRemaining} (${this.timeUtils.formatHoursToTimeString(this.timeUtils.config.DAILY_WORK_HOURS)})`,
-           this.timeUtils.formatHoursToTimeString(Math.abs(todayData.remainingTime) / 3600000))}
+        ${h(
+          (todayData.remainingTime >= 0 ? this.translations.timeRemaining : this.translations.timeExceeded) +
+          ` (${this.timeUtils.formatHoursToTimeString(this.timeUtils.config.DAILY_WORK_HOURS)})`,
+          this.timeUtils.formatHoursToTimeString(Math.abs(todayData.remainingTime) / 3600000)
+        )}
         ${h(this.translations.estimatedEnd, todayData.estimatedEndTime)}
         ${h(this.translations.pauseDetected, todayData.pauseDetected ? this.translations.yes : this.translations.no)}
         ${h(this.translations.pauseAdded, todayData.pauseAdded > 0 ? Math.floor(todayData.pauseAdded / 60000) + ' min' : this.translations.none)}
