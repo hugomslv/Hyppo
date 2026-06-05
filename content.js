@@ -243,7 +243,7 @@
       dayHeaders.forEach(({ el }) => {
         const headerText  = el.querySelector('strong')?.textContent?.trim() || '';
         const contentText = el.querySelector('div:last-child')?.textContent || '';
-        const match = contentText.match(/Temps traité:\s*([0-9]{1,2}):(\d{2})/);
+        const match = contentText.match(/Heures effectuées \s*([0-9]{1,2}):(\d{2})/);
         if (match) {
           const ms = this.timeUtils.parseTimeStringToMilliseconds(`${match[1]}:${match[2]}`);
           week += ms;
