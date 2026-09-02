@@ -17,7 +17,7 @@ const DEFAULT_CONFIG = {
 // Chargement de la configuration depuis le storage
 async function loadConfiguration() {
     try {
-        const result = await chrome.storage.sync.get('timeManagerConfig');
+        const result = await extensionApi.storage.sync.get('timeManagerConfig');
         window.TIME_MANAGER_CONFIG = result.timeManagerConfig || DEFAULT_CONFIG;
         console.log('Configuration chargée:', window.TIME_MANAGER_CONFIG);
     } catch (error) {

@@ -11,13 +11,10 @@
     "host_permissions": [
         "https://launchpad.wd.pnet.ch/*"
     ],
-    "background": {
-        "service_worker": "background.js"
-    },
       "content_scripts": [
     {
      "matches": ["*://*.pnet.ch/*", "*://*.workday.com/*", "*://*/launchpad.wd.pnet.ch/*"],
-      "js": ["config.js", "translations.js", "content.js"],
+      "js": ["api.js", "config.js", "translations.js", "content.js"],
       "run_at": "document_idle",
       "all_frames": true,
       "match_about_blank": true
@@ -32,5 +29,11 @@
         "16": "clock.png",
         "48": "clock.png",
         "128": "clock.png"
+    },
+    "browser_specific_settings": {
+        "gecko": {
+            "id": "time-manager@hyppo",
+            "strict_min_version": "109.0"
+        }
     }
 }

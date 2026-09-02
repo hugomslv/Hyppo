@@ -61,30 +61,25 @@ class TimeManagerPopup {
     this.renderConvertChecklist(cfg);
   }
 
-  fetchRowNames() {
-    return new Promise((resolve) => {
-      chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-        const tab = tabs[0];
-        if (!tab) return resolve([]);
-        chrome.scripting.executeScript(
-          {
-            target: { tabId: tab.id },
-            func: () => {
-              const cells = Array.from(document.querySelectorAll('tr[data-uid] td[role="gridcell"]'));
-              const names = cells.map(td => (td.textContent || '').trim()).filter(Boolean);
-              return Array.from(new Set(names));
-            }
-          },
-          (results) => {
-            if (chrome.runtime.lastError || !results || !results[0]) {
-              resolve([]);
-            } else {
-              resolve(results[0].result || []);
-            }
-          }
-        );
+  async fetchRowNames() {
+    try {
+      const tabs = await extensionApi.tabs.query({ active: true, currentWindow: true });
+      const tab = tabs[0];
+      if (!tab) return [];
+
+      const results = await extensionApi.scripting.executeScript({
+        target: { tabId: tab.id },
+        func: () => {
+          const cells = Array.from(document.querySelectorAll('tr[data-uid] td[role="gridcell"]'));
+          const names = cells.map(td => (td.textContent || '').trim()).filter(Boolean);
+          return Array.from(new Set(names));
+        }
       });
-    });
+      return results[0]?.result || [];
+    } catch (error) {
+      console.error('Erreur lors de la récupération des lignes:', error);
+      return [];
+    }
   }
 
   renderRowChecklist(config) {
@@ -121,16 +116,9 @@ class TimeManagerPopup {
     });
   }
 
-  loadConfiguration() {
-    chrome.storage.sync.get(['timeManagerConfig'], async (result) => {
-      if (chrome.runtime.lastError) {
-        console.error(chrome.runtime.lastError);
-        this.rowNames = await this.fetchRowNames();
-        this.populateForm(this.defaultConfig);
-        this.showStatus('❌ Erreur de chargement', 'error');
-        return;
-      }
-
+  async loadConfiguration() {
+    try {
+      const result = await extensionApi.storage.sync.get(['timeManagerConfig']);
       const cfg = result.timeManagerConfig || { ...this.defaultConfig };
       // compat clés
       if (cfg.WEEKLY_BASE_HOURS == null) cfg.WEEKLY_BASE_HOURS = 42;
@@ -139,7 +127,12 @@ class TimeManagerPopup {
       this.rowNames = await this.fetchRowNames();
       this.populateForm(cfg);
       this.showStatus('⚙️ Configuration chargée', 'info');
-    });
+    } catch (error) {
+      console.error('Erreur lors du chargement de la configuration:', error);
+      this.rowNames = await this.fetchRowNames();
+      this.populateForm(this.defaultConfig);
+      this.showStatus('❌ Erreur de chargement', 'error');
+    }
   }
 
   populateForm(config) {
@@ -161,7 +154,7 @@ class TimeManagerPopup {
     this.updateCalculatedDailyPreview(config);
   }
 
-  saveConfiguration() {
+  async saveConfiguration() {
     const config = this.getFormData();
     const validation = this.validateConfiguration(config);
     if (!validation.isValid) {
@@ -169,15 +162,14 @@ class TimeManagerPopup {
       return;
     }
 
-    chrome.storage.sync.set({ timeManagerConfig: config }, () => {
-      if (chrome.runtime.lastError) {
-        console.error(chrome.runtime.lastError);
-        this.showStatus('❌ Erreur de sauvegarde', 'error');
-      } else {
-        this.showStatus('✅ Configuration sauvegardée !', 'success');
-        this.reloadActiveTab();
-      }
-    });
+    try {
+      await extensionApi.storage.sync.set({ timeManagerConfig: config });
+      this.showStatus('✅ Configuration sauvegardée !', 'success');
+      await this.reloadActiveTab();
+    } catch (error) {
+      console.error('Erreur lors de la sauvegarde de la configuration:', error);
+      this.showStatus('❌ Erreur de sauvegarde', 'error');
+    }
   }
 
   // === Calcul heures/jour à partir de 42h @ 100% et du pourcentage ===
@@ -258,26 +250,28 @@ class TimeManagerPopup {
     return { isValid: true };
   }
 
-  resetConfiguration() {
+  async resetConfiguration() {
     if (!confirm('Êtes-vous sûr de vouloir réinitialiser la configuration ?')) return;
-    chrome.storage.sync.remove('timeManagerConfig', () => {
-      if (chrome.runtime.lastError) {
-        console.error(chrome.runtime.lastError);
-        this.showStatus('❌ Erreur de réinitialisation', 'error');
-      } else {
-        this.populateForm(this.defaultConfig);
-        this.showStatus('🔄 Configuration réinitialisée', 'info');
-      }
-    });
+    try {
+      await extensionApi.storage.sync.remove('timeManagerConfig');
+      this.populateForm(this.defaultConfig);
+      this.showStatus('🔄 Configuration réinitialisée', 'info');
+    } catch (error) {
+      console.error('Erreur lors de la réinitialisation de la configuration:', error);
+      this.showStatus('❌ Erreur de réinitialisation', 'error');
+    }
   }
 
-  reloadActiveTab() {
-    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+  async reloadActiveTab() {
+    try {
+      const tabs = await extensionApi.tabs.query({ active: true, currentWindow: true });
       const tab = tabs[0];
       if (tab && tab.url && tab.url.includes('launchpad.wd.pnet.ch')) {
-        chrome.tabs.reload(tab.id);
+        await extensionApi.tabs.reload(tab.id);
       }
-    });
+    } catch (error) {
+      console.error('Erreur lors du rechargement de l’onglet:', error);
+    }
   }
 
   showStatus(message, type = 'info') {
